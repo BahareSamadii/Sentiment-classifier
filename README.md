@@ -21,3 +21,27 @@
 #classifier.fit(X_train_vec, y_train)
 #Accuracy: 0.4522
 
+## V4:
+# Build the neural network model
+model = Sequential()
+model.add(Dense(128, activation='relu', input_shape=(X_train_vec.shape[1],)))
+model.add(Dropout(0.5))
+model.add(Dense(64, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(num_classes, activation='softmax'))
+
+# Compile the model
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+# Early stopping to prevent overfitting
+early_stopping = EarlyStopping(patience=3, restore_best_weights=True)
+
+# Train the model
+model.fit(X_train_vec, y_train, validation_data=(X_test_vec, y_test), epochs=20, batch_size=32, callbacks=[early_stopping])
+
+# Evaluate the model on the test set
+y_pred = model.predict(X_test_vec)
+y_pred_classes = np.argmax(y_pred, axis=1)
+accuracy = np.mean(np.array_equal(y_pred_classes, np.argmax(y_test, axis=1)))
+print(f"Accuracy: {accuracy:.4f}")
+#Accuracy: 0.49
